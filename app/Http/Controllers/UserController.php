@@ -16,7 +16,6 @@ class UserController extends Controller
     {
         //
         $users = User::paginate(5);
-        //print_r($users);
         return view('users.index',['users' => $users]);
 
     }
@@ -61,6 +60,8 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        //そのユーザーが投稿した記事のうち、最新5件を取得
+        $user->posts = $user->posts()->paginate(5);
         //urlが/users/{user}のとき※{user}＝ID
         return view("users.show", ["user"=>$user]);
     }

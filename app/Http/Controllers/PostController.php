@@ -22,7 +22,13 @@ class PostController extends Controller
 
         // 3. latestメソッドがおすすめ(新しい順に取得可能)
         $posts = Post::latest()->paginate(5);
-        \Debugbar::info($posts);
+
+        //$user = Post::find(1)->user;
+        foreach ($posts as $a) {
+            //\Debugbar::info($a);
+            \Debugbar::info($a->user);
+        }
+
 
         return view('posts.index', ['posts' => $posts]);
     }

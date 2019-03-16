@@ -19,12 +19,21 @@
 
     {{-- 記事内容 --}}
     <dl class="row">
+        {{-- user名 --}}
+        <dt class="col-md-2">{{ __('Author') }}:</dt>
+        <dd class="col-md-10">
+            <a href="{{ url('users/' . $post->user->id) }}">
+                {{ $post->user->name }}
+            </a>
+        </dd>
+        {{-- 作成日 --}}
         <dt class="col-md-2">{{ __('Created') }}:</dt>
         <dd class="col-md-10">
             <time itemprop="dateCreated" datetime="{{ $post->created_at }}">
                 {{ $post->created_at }}
             </time>
         </dd>
+        {{-- 更新日 --}}
         <dt class="col-md-2">{{ __('Updated') }}:</dt>
         <dd class="col-md-10">
             <time itemprop="dateModified" datetime="{{ $post->updated_at }}">
@@ -33,6 +42,7 @@
         </dd>
     </dl>
     <hr>
+    {{-- 記事 --}}
     <div id="post-body">
         {{ $post->body }}
     </div>
