@@ -2,11 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+ use Illuminate\Http\Request;
+use App\Http\Requests\StoreUser;
 use App\User;
 
 class UserController extends Controller
 {
+
+
+    /**
+     * 各アクションの前に実行させるミドルウェア
+     */
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -34,10 +45,10 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreUser
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUser $request)
     {
         //urlがuserでpostされてとき(ユーザー作成後等)の処理
         //user作成後の遷移先は作成されたuserのページ
@@ -48,7 +59,8 @@ class UserController extends Controller
         $user->password = $request->password;
         $user->save();
 
-        return redirect('users/'.$user->id);
+        //return redirect('users/'.$user->id);
+        return redirect('users/'.$user->id)->with("my_status", __("Created new user."));
 
     }
 
@@ -87,13 +99,21 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // 実際の更新処理
+        // 実際の更新処理＆バリデーション
+        
+        // name欄だけを検査するため、元のStoreUserクラス内のバリデーション・ルールからname欄のルールだけを取り出す。
+        $storeUser = new StoreUser();
+        $request->validate([
+            "name" => $storeUser->rules()["name"]
+        ]);
+
         //putされてきたときに実行される
         $user->name = $request->name;
         $user->save();
 
         // 更新後は更新したユーザーのページへ遷移する
-        return redirect("users/".$user->id);
+        //return redirect("users/".$user->id);
+        return redirect('users/'.$user->id)->with("my_status", __("Updated a user."));
     }
 
     /**
@@ -105,7 +125,8 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect("users");
+        //return redirect("users");
+        return redirect('users')->with("my_status", __("Deleted a user."));
     }
 
     public function list()

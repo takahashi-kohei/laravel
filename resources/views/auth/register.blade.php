@@ -1,3 +1,6 @@
+@php
+    $title = __('Register');
+@endphp
 @extends('layouts.app')
 
 @section('content')

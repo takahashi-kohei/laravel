@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\StorePost;
 use App\Models\Post;
 
 class PostController extends Controller
 {
+
+    /**
+     * 各アクションの前に実行させるミドルウェア
+     */
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +36,7 @@ class PostController extends Controller
         //$user = Post::find(1)->user;
         foreach ($posts as $a) {
             //\Debugbar::info($a);
-            \Debugbar::info($a->user);
+            //\Debugbar::info($a->user);
         }
 
 
@@ -46,18 +56,20 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests/StorePost  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePost $request)
     {
         //urlがpostsでpostされてとき(ユーザー作成後等)の処理
         $post = new Post;
         $post->title = $request->title;
         $post->body = $request->body;
+        $post->user_id = $request->user()->id;
         $post->save();
 
-        return redirect('posts/'.$post->id);
+        //return redirect('posts/'.$post->id);
+        return redirect('posts/'.$post->id)->with("my_status", __("Posted new article."));
     }
 
     /**
@@ -85,17 +97,18 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests/StorePost  $request
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(StorePost $request, Post $post)
     {
         $post->title = $request->title;
         $post->body = $request->body;
         $post->save();
 
-        return redirect("posts/".$post->id);
+        //return redirect("posts/".$post->id);
+        return redirect('posts/'.$post->id)->with("my_status", __("Updated an article."));
     }
 
     /**
@@ -107,6 +120,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect("posts");
+        //return redirect("posts");
+        return redirect('posts')->with("my_status", __("Deleted an article."));
     }
 }
